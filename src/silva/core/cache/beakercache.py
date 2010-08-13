@@ -1,13 +1,12 @@
 from five import grok
+import beaker.cache
 from beaker.cache import CacheManager as BCM
-from beaker.cache import cache_regions
-from beaker.util import parse_cache_config_options
 from beaker.exceptions import BeakerException
 from App.config import getConfiguration
 from silva.core.cache.interfaces import ICacheManager
 
 
-class CacheManager(grok.Utility):
+class CacheManager(object):
     """ a cache manager that wraps beaker
     """
     grok.implements(ICacheManager)
@@ -20,34 +19,28 @@ class CacheManager(grok.Utility):
 
     def __init__(self):
         self._parse_config()
-        self.bcm = BCM(**parse_cache_config_options(self._get_beaker_config()))
+        self.bcm = BCM(**self._parse_config())
+        self.regions = self.bcm.regions
 
-    def get_cache(self, region):
+    def get_cache(self, namespace, region):
         try:
-            return BCM.get_cache_region()
+            return self.bcm.get_cache_region(namespace, region)
         except BeakerException:
             self._create_region_from_default(region)
-            return BCM.get_cache_region()
+            return self.bcm.get_cache_region(namespace, region)
 
     def _parse_config(self):
         zconf = getattr(getConfiguration(), 'product_config', {})
         cache_config = zconf.get('silva.core.cache', {})
-        self.regions = {}
+        regions = {}
         for key, value in cache_config:
             if '.' in key:
                 region, param = key.split('.', 1)
-                if region not in self.regions:
-                    self.regions[region] = {}
-                self.regions[region][param] = value
-        if 'default' in self.regions:
-            self.default_region_options = self.regions['default']
-            del self.default_region_options['default']
-        return self.regions
-
-    def _get_beaker_config(self):
-        regions = self.regions.keys()
-        options = self.regions.copy()
-        options['regions'] = ", ".join(regions)
+                if region not in regions:
+                    regions[region] = {}
+                regions[region][param] = value
+        options = self.default_region_options.copy()
+        options['cache_regions'] = regions
         return options
 
     def _create_region_from_default(self, region):
@@ -55,4 +48,8 @@ class CacheManager(grok.Utility):
         """
         options = self.default_region_options.copy()
         self.regions[region] = options
-        cache_regions.update({region: options})
+        self.bcm.regions.update({region: options})
+        beaker.cache.cache_regions.update({region: options})
+
+
+grok.global_utility(CacheManager)

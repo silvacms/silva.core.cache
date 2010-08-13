@@ -16,6 +16,6 @@ class ICacheManager(Interface):
     """ An utility from which to get cache objects
     """
 
-    def get_cache(region):
-        """ return a cache store for the region
+    def get_cache(namespace, region):
+        """ return a ICacheStore for the region
         """

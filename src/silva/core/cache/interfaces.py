@@ -8,8 +8,17 @@ class ICacheStore(Interface):
     def put(key, value, **options):
         """ put item in the cache """
 
-    def get(key, value, **options):
+    def get(key, **options):
         """ get item from the cache """
+
+    def has_key(key):
+        """ key present in cache """
+
+    def remove(key):
+        """ remove from cache """
+
+    def clear():
+        """ the whole cached (namespace) """
 
 
 class ICacheManager(Interface):

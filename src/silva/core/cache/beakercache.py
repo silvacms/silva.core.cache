@@ -1,9 +1,10 @@
 from five import grok
 import beaker.cache
+from zope.interface import alsoProvides
 from beaker.cache import CacheManager as BCM
 from beaker.exceptions import BeakerException
 from App.config import getConfiguration
-from silva.core.cache.interfaces import ICacheManager
+from silva.core.cache.interfaces import ICacheManager, ICacheStore
 
 
 class CacheManager(object):
@@ -27,7 +28,8 @@ class CacheManager(object):
             return self.bcm.get_cache_region(namespace, region)
         except BeakerException:
             self._create_region_from_default(region)
-            return self.bcm.get_cache_region(namespace, region)
+            cache = self.bcm.get_cache_region(namespace, region)
+            alsoProvides(ICacheStore, cache)
 
     def _parse_config(self):
         zconf = getattr(getConfiguration(), 'product_config', {})

@@ -1,17 +1,24 @@
-from five import grok
+# -*- coding: utf-8 -*-
+# Copyright (c) 2010 Infrae. All rights reserved.
+# See also LICENSE.txt
+
+import logging
 import beaker.cache
 from beaker.cache import CacheManager as BCM
 from beaker.exceptions import BeakerException
+
+from five import grok
 from App.config import getConfiguration
 from silva.core.cache.interfaces import ICacheManager
-import logging
 
 logger = logging.getLogger('silva.core.cache')
 
-class CacheManager(object):
+
+class CacheManager(grok.GlobalUtility):
     """ a cache manager that wraps beaker
     """
     grok.implements(ICacheManager)
+    grok.provides(ICacheManager)
 
     default_region_options = {
         'lock_dir': '/tmp/beaker',
@@ -55,6 +62,3 @@ class CacheManager(object):
         self.regions[region] = options
         self.bcm.regions.update({region: options})
         beaker.cache.cache_regions.update({region: options})
-
-
-grok.global_utility(CacheManager)

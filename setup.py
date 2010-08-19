@@ -30,13 +30,13 @@ setup(name='silva.core.cache',
       license='ZPL',
       package_dir={'': 'src'},
       packages=find_packages('src'),
-      namespace_packages=['silva'],
+      namespace_packages=['silva', 'silva.core'],
       include_package_data=True,
       zip_safe=False,
       install_requires=[
         'Beaker',
         'infrae.cache'
-          ],
+        ],
       tests_require = tests_require,
       extras_require = {'test': tests_require},
       )

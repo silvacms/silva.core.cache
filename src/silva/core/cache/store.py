@@ -36,9 +36,9 @@ class Store(object):
         self.__backend.remove(key)
 
 
-class ClientStore(Store):
+class SessionStore(Store):
     """Store data within only current client scope.
     """
 
     def __init__(self, request):
-        super(ClientStore, self).__init__(str(ClientId(request)))
+        super(SessionStore, self).__init__(str(ClientId(request)))

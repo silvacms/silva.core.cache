@@ -11,9 +11,9 @@ class Store(object):
     """Abstract access to the cache manager.
     """
 
-    def __init__(self, namespace):
+    def __init__(self, namespace, region='shared'):
         cache_manager = getUtility(ICacheManager)
-        self.__backend = cache_manager.get_cache(namespace, 'shared')
+        self.__backend = cache_manager.get_cache(namespace, region)
 
     def get(self, key, default=None):
         try:

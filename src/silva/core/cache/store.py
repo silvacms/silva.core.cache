@@ -7,11 +7,13 @@ from silva.core.cache.clientid import ClientId
 from zope.component import getUtility
 
 
+DEFAULT_REGION = 'shared'
+
 class Store(object):
     """Abstract access to the cache manager.
     """
 
-    def __init__(self, namespace, region='shared'):
+    def __init__(self, namespace, region=DEFAULT_REGION):
         cache_manager = getUtility(ICacheManager)
         self.__backend = cache_manager.get_cache(namespace, region)
 
@@ -40,5 +42,6 @@ class SessionStore(Store):
     """Store data within only current client scope.
     """
 
-    def __init__(self, request):
-        super(SessionStore, self).__init__(str(ClientId(request)))
+    def __init__(self, request, region=DEFAULT_REGION):
+        super(SessionStore, self).__init__(
+            str(ClientId(request)), region=region)

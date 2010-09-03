@@ -34,10 +34,10 @@ class CacheManager(grok.GlobalUtility):
     def get_cache(self, namespace, region):
         try:
             return self.bcm.get_cache_region(namespace, region)
-        except BeakerException:
+        except BeakerException as e:
             logger.warn('no specific configuration for region %s'
-                        ' using defaults : %s',
-                        region, repr(self.default_region_options))
+                        ' using defaults (%s) : %s',
+                        region, repr(self.default_region_options), e)
             self._create_region_from_default(region)
             return self.bcm.get_cache_region(namespace, region)
 
@@ -45,12 +45,17 @@ class CacheManager(grok.GlobalUtility):
         zconf = getattr(getConfiguration(), 'product_config', {})
         cache_config = zconf.get('silva.core.cache', {})
         regions = {}
-        for key, value in cache_config:
+        for key, value in cache_config.iteritems():
             if '.' in key:
                 region, param = key.split('.', 1)
                 if region not in regions:
                     regions[region] = {}
                 regions[region][param] = value
+
+        if regions.has_key('default'):
+            self.default_region_options = regions['default']
+            del regions['default']
+
         options = self.default_region_options.copy()
         options['cache_regions'] = regions
         return options

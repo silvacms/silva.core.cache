@@ -44,4 +44,4 @@ class SessionStore(Store):
 
     def __init__(self, request, region=DEFAULT_REGION):
         super(SessionStore, self).__init__(
-            str(ClientId(request)), region=region)
+            'session:' + str(ClientId(request)), region=region)

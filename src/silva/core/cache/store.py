@@ -3,9 +3,8 @@
 # See also LICENSE.txt
 
 from silva.core.cache.interfaces import ICacheManager
-from silva.core.cache.clientid import ClientId
 from zope.component import getUtility
-
+from zope.session.interfaces import IClientId
 
 DEFAULT_REGION = 'shared'
 
@@ -44,4 +43,4 @@ class SessionStore(Store):
 
     def __init__(self, request, region=DEFAULT_REGION):
         super(SessionStore, self).__init__(
-            'session:' + str(ClientId(request)), region=region)
+            'session:' + str(IClientId(request)), region=region)

@@ -41,6 +41,10 @@ class CacheManager(grok.GlobalUtility):
             self._create_region_from_default(region)
             return self.bcm.get_cache_region(namespace, region)
 
+    def get_simple_cache(self, namespace, **options):
+        # Doesn't rely on region for configuration.
+        return self.bcm.get_cache(namespace, **options)
+
     def _parse_config(self):
         zconf = getattr(getConfiguration(), 'product_config', {})
         cache_config = zconf.get('silva.core.cache', {})

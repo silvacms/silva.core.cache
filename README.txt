@@ -53,6 +53,10 @@ Developers have different tools at their disposal, mainly:
    property where its computation is cached in Beaker. Except for
    ``key`` it takes the same parameters than ``cached_method``.
 
+``silva.core.cache.store.Store``
+   Giving a cache name, it give a dictionnary like access to this
+   cache.
+
 ``silva.core.cache.store.SessionStore``
    Constructed out of a request, it is a dictionnary like access to a
    unique cache for this user session. The session is identified with

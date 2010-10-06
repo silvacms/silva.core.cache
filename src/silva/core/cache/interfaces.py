@@ -25,6 +25,12 @@ class ICacheManager(Interface):
     """ An utility from which to get cache objects
     """
 
-    def get_cache(namespace, region):
-        """ return a ICacheStore for the region
+    def get_cache_from_region(namespace, region):
+        """Return a beaker cache for this namespace, configured from
+        the given region if it didn't exists.
+        """
+
+    def get_cache(namespace, **options):
+        """Return a beaker cache for this namespace, constructed with
+        the given options if it didn't exists.
         """

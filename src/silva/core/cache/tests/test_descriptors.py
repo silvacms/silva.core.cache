@@ -43,7 +43,7 @@ class DescriptorTestCase(unittest.TestCase):
         # The method is now cached, so add is not called.
         self.assertEqual(content.add(4), 4)
 
-        cache = manager.get_simple_cache(
+        cache = manager.get_cache(
             'silva.core.cache.tests.test_descriptors.add')
         self.assertEqual(cache.get('4'), 4)
         self.assertRaises(KeyError, cache.get, '5')
@@ -63,7 +63,7 @@ class DescriptorTestCase(unittest.TestCase):
         self.assertEqual(content.remove(4), -4)
 
         self.assertTrue('test_descriptors' in beaker.cache.cache_regions)
-        cache = manager.get_cache(
+        cache = manager.get_cache_from_region(
             'silva.core.cache.tests.test_descriptors.remove',
             'test_descriptors')
         self.assertEqual(cache.get('4'), -4)
@@ -81,7 +81,7 @@ class DescriptorTestCase(unittest.TestCase):
         content = TestContent()
         content.add(4)
 
-        cache = manager.get_simple_cache(
+        cache = manager.get_cache(
             'silva.core.cache.tests.test_descriptors.next')
         self.assertRaises(KeyError, cache.get, 'property')
 

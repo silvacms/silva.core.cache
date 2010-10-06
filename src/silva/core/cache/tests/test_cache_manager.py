@@ -26,13 +26,13 @@ class CacheManagerTestCase(unittest.TestCase):
 
     def test_create_region(self):
         manager = queryUtility(ICacheManager)
-        cache = manager.get_cache('nstest', 'unexistant-region')
+        cache = manager.get_cache_from_region('nstest', 'unexistant-region')
         self.assertTrue(cache)
         self.assertTrue('unexistant-region' in beaker.cache.cache_regions)
 
     def test_get_cache(self):
         manager = queryUtility(ICacheManager)
-        cache = manager.get_simple_cache('nstest')
+        cache = manager.get_cache('nstest')
         self.assertTrue(cache)
 
 

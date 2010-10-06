@@ -15,7 +15,7 @@ class Store(object):
 
     def __init__(self, namespace, region=DEFAULT_REGION):
         cache_manager = getUtility(ICacheManager)
-        self.__backend = cache_manager.get_cache(namespace, region)
+        self.__backend = cache_manager.get_cache_from_region(namespace, region)
 
     def get(self, key, default=None):
         try:

@@ -8,6 +8,7 @@ from zope.session.interfaces import IClientId
 
 DEFAULT_REGION = 'shared'
 
+
 class Store(object):
     """Abstract access to the cache manager.
     """

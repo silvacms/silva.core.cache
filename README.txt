@@ -1,23 +1,64 @@
+================
 silva.core.cache
-----------------
+================
 
-Cache support for silva.
+Presentation
+============
 
-To use memcache you will need to add python-memcached or
-python-libmemcached (C) to your buildout.
+This package provide a pluggable cache support for Silva related
+components, base on `Beaker <http://beaker.groovie.org/index.html>`_.
+By default content will be cached in memory, but you can use a different
+storage like files, memcache or an SQL database to store cached content.
 
-Configuration sample (zope.conf) :
+For a single instance installation we recommand to use memory as
+storage. For a ZEO installation we recommand to use memcache as
+storage.
 
-<product-config silva.core.cache>
+To use memcache you will need to install `python-memcached` or
+`python-libmemcached` (a C implementation), this can be done via
+buildout.
 
-    # default region
-    default.lock_dir /tmp/memcache
-    default.type ext:memcached
-    default.url localhost:11211
+After you will need to configure in your Zope configuration
+(``zope.conf``) which storage to use for which regions::
 
-    # shared region
-    shared.lock_dir /tmp/memcache
-    shared.type ext:memcached
-    shared.url someotherhost:11211
+  <product-config silva.core.cache>
 
-</product-config>
+      # default region
+      default.lock_dir /tmp/memcache
+      default.type ext:memcached
+      default.url localhost:11211
+
+      # shared region
+      shared.lock_dir /tmp/memcache
+      shared.type ext:memcached
+      shared.url someotherhost:11211
+
+  </product-config>
+
+API
+===
+
+Developers have different tools at their disposal, mainly:
+
+``silva.core.cache.descriptors.cached_method``
+   Decorator that can be used on a class method to cache its
+   computation. It can take a ``region`` which specify which caching
+   region to use, a ``key`` which is a callable, taking as parameter
+   the class on which the method is called to compute a caching
+   key. If ``region`` is not specified, all other parameters are Beaker
+   options used to configured the cache manager used.
+
+``silva.core.cache.descriptors.cached_property``
+   Decorator that can be used on a class to create a read-only
+   property where its computation is cached in Beaker. Except for
+   ``key`` it takes the same parameters than ``cached_method``.
+
+``silva.core.cache.store.SessionStore``
+   Constructed out of a request, it is a dictionnary like access to a
+   unique cache for this user session. The session is identified with
+   the help of the adapter ``IClientId`` of ``zope.session``. An
+   implementation of this adapter for Zope 2 is done in this package.
+
+``silva.core.cache.interfaces.ICacheManager``
+   A global utility provides this interface to give you access to all
+   cache managers used by this extension.

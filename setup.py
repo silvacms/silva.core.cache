@@ -8,6 +8,7 @@ import os
 version = '2.3dev'
 
 tests_require = [
+    'infrae.testing'
     ]
 
 setup(name='silva.core.cache',
@@ -35,7 +36,17 @@ setup(name='silva.core.cache',
       zip_safe=False,
       install_requires=[
         'Beaker',
-        'infrae.cache'
+        'five.grok',
+        'infrae.cache',
+        'persistent',
+        'setuptools',
+        'silva.core.views',
+        'zope.component',
+        'zope.datetime',
+        'zope.interface',
+        'zope.publisher',
+        'zope.session',
+        'zope.testing',
         ],
       tests_require = tests_require,
       extras_require = {'test': tests_require},

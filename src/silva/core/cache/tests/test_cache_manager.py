@@ -1,32 +1,42 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2010 Infrae. All rights reserved.
+# See also LICENSE.txt
+# $Id$
+
 import unittest
-from silva.core.cache.beakercache import CacheManager
-from silva.core.cache.interfaces import ICacheManager
+
+import beaker.cache
 from zope.interface.verify import verifyObject
-from Products.Silva.tests.layer import SilvaFunctionalLayer
+from zope.component import queryUtility
+
+from silva.core.cache.interfaces import ICacheManager
+from silva.core.cache.testing import FunctionalLayer
 
 
-class CacheManagerTest(unittest.TestCase):
-    layer = SilvaFunctionalLayer
-
-    def setUp(self):
-        self.cm = CacheManager()
+class CacheManagerTestCase(unittest.TestCase):
+    layer = FunctionalLayer
 
     def tearDown(self):
-        import beaker.cache
         beaker.cache.cache_regions.clear()
 
     def test_interface(self):
-        self.assertTrue(verifyObject(ICacheManager, self.cm))
+        manager = queryUtility(ICacheManager)
+        self.assertNotEqual(manager, None)
+        self.assertTrue(verifyObject(ICacheManager, manager))
 
     def test_create_region(self):
-        cache = self.cm.get_cache('nstest', 'unexistant-region')
+        manager = queryUtility(ICacheManager)
+        cache = manager.get_cache('nstest', 'unexistant-region')
         self.assertTrue(cache)
-        from beaker.cache import cache_regions
-        self.assertTrue('unexistant-region' in cache_regions)
+        self.assertTrue('unexistant-region' in beaker.cache.cache_regions)
+
+    def test_get_cache(self):
+        manager = queryUtility(ICacheManager)
+        cache = manager.get_simple_cache('nstest')
+        self.assertTrue(cache)
 
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(CacheManagerTest))
+    suite.addTest(unittest.makeSuite(CacheManagerTestCase))
     return suite
-

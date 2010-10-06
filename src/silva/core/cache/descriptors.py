@@ -46,7 +46,7 @@ def cached_property(namespace=None, region=None, **cache_options):
         cache_ns = namespace
         if cache_ns is None:
             cache_ns = util.func_namespace(func)
-        def cached_property(self, *args, **kwargs):
+        def cached_property(self):
             utility = getUtility(ICacheManager)
             if region is not None:
                 cache = utility.get_cache(cache_ns, region)

@@ -1,13 +1,12 @@
 Changes
 =======
 
-2.3.1 (unreleased)
+2.3.1 (2010/10/18)
 ------------------
 
-* ...
+* Fix cookie path for cookie session in case of virtual host hosting.
 
 2.3 (2010/10/06)
 ----------------
 
-* Initial relase.
-
+* Initial release.

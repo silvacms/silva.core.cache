@@ -6,7 +6,7 @@
 import operator
 
 from persistent.interfaces import IPersistent
-from silva.core.cache.interfaces import ICacheManager
+from silva.core.cache.interfaces import ICacheManager, _verify_key
 from zope.component import getUtility
 from beaker import util
 
@@ -30,13 +30,12 @@ def cached_method(namespace=None, region=None, key=None, **cache_options):
                 if IPersistent.providedBy(self):
                     cache_key = tuple(str(self._p_oid))
                 cache_key += tuple(map(str, args))
-                cache_key += tuple(map(lambda kwarg: "=".join(map(str, kwarg)),
-                                       sorted(kwargs.items(),
-                                              key=operator.itemgetter(0))))
-                cache_key = " ".join(cache_key)
+                cache_key += tuple(map(
+                        lambda kwarg: "=".join(map(str, kwarg)),
+                        sorted(kwargs.items(), key=operator.itemgetter(0))))
             def solves():
                 return func(self, *args, **kwargs)
-            return cache.get_value(cache_key, createfunc=solves)
+            return cache.get_value(_verify_key(cache_key), createfunc=solves)
         return cached_method
     return decorator
 
@@ -57,6 +56,6 @@ def cached_property(namespace=None, region=None, **cache_options):
                 cache_key = str(self._p_oid)
             def solves():
                 return func(self)
-            return cache.get_value(cache_key, createfunc=solves)
+            return cache.get_value(_verify_key(cache_key), createfunc=solves)
         return property(cached_property)
     return decorator

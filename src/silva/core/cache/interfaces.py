@@ -1,4 +1,17 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2010 Infrae. All rights reserved.
+# See also LICENSE.txt
+# $Id$
+
+import hashlib
+
 from zope.interface import Interface
+
+
+def _verify_key(key):
+    if isinstance(key, tuple):
+        return hashlib.md5(' '.join(key)).hexdigest()
+    return key
 
 
 class ICacheStore(Interface):

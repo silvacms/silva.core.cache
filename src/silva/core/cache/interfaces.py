@@ -11,7 +11,7 @@ from zope.interface import Interface
 def _verify_key(key):
     if isinstance(key, tuple):
         return hashlib.md5(' '.join(key)).hexdigest()
-    return key
+    return str(key)
 
 
 class ICacheStore(Interface):

@@ -8,7 +8,7 @@ import beaker.cache
 
 from zope.component import queryUtility
 
-from silva.core.cache.interfaces import ICacheManager
+from silva.core.cache.interfaces import ICacheManager, _verify_key
 from silva.core.cache.descriptors import cached_method, cached_property
 from silva.core.cache.testing import FunctionalLayer
 
@@ -45,15 +45,15 @@ class DescriptorTestCase(unittest.TestCase):
 
         cache = manager.get_cache(
             'silva.core.cache.tests.test_descriptors.add')
-        self.assertEqual(cache.get('4'), 4)
-        self.assertRaises(KeyError, cache.get, '5')
+        self.assertEqual(cache.get(_verify_key(('4',))), 4)
+        self.assertRaises(KeyError, cache.get, _verify_key(('5',)))
 
         self.assertEqual(content.add(5), 9)
         # The method is now cached, so add is not called.
         self.assertEqual(content.add(5), 9)
 
-        self.assertEqual(cache.get('4'), 4)
-        self.assertEqual(cache.get('5'), 9)
+        self.assertEqual(cache.get(_verify_key(('4',))), 4)
+        self.assertEqual(cache.get(_verify_key(('5',))), 9)
 
     def test_method_region(self):
         manager = queryUtility(ICacheManager)
@@ -66,15 +66,15 @@ class DescriptorTestCase(unittest.TestCase):
         cache = manager.get_cache_from_region(
             'silva.core.cache.tests.test_descriptors.remove',
             'test_descriptors')
-        self.assertEqual(cache.get('4'), -4)
-        self.assertRaises(KeyError, cache.get, '-5')
+        self.assertEqual(cache.get(_verify_key(('4',))), -4)
+        self.assertRaises(KeyError, cache.get, _verify_key(('-5',)))
 
         self.assertEqual(content.remove(-5), 1)
         # The method is now cached, so add is not called.
         self.assertEqual(content.remove(-5), 1)
 
-        self.assertEqual(cache.get('4'), -4)
-        self.assertEqual(cache.get('-5'), 1)
+        self.assertEqual(cache.get(_verify_key(('4',))), -4)
+        self.assertEqual(cache.get(_verify_key(('-5',))), 1)
 
     def test_property(self):
         manager = queryUtility(ICacheManager)

@@ -11,14 +11,14 @@ By default content will be cached in memory, but you can use a different
 storage like files, memcache or an SQL database to store cached content.
 
 For a single instance installation we recommand to use memory as
-storage. For a ZEO installation we recommand to use memcache as
-storage.
+storage. For a ZEO / multi Zope instance installation we recommand to
+use memcache as storage.
 
-To use memcache you will need to install `python-memcached` or
-`python-libmemcached` (a C implementation), this can be done via
-buildout.
+To use memcache recommend to install `pylibmc`, this can be done via
+buildout. Please refer to the installation documentation of Silva for
+this.
 
-After you will need to configure in your Zope configuration
+After you can configure in your Zope configuration
 (``zope.conf``) which storage to use for which regions::
 
   <product-config silva.core.cache>

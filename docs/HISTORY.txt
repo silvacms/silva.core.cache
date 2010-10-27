@@ -1,10 +1,11 @@
 Changes
 =======
 
-2.3.2 (unreleased)
+2.3.2 (2010/10/27)
 ------------------
 
-* ...
+* Ensure caching keys are always string. This is required by memcache
+  implementations.
 
 2.3.1 (2010/10/18)
 ------------------

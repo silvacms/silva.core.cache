@@ -11,7 +11,7 @@ from zope.component import getUtility
 from beaker import util
 
 
-def cached_method(namespace=None, region=None, key=None, **cache_options):
+def cached_method(namespace=None, region='shared', key=None, **cache_options):
     def decorator(func):
         cache_ns = namespace
         if cache_ns is None:
@@ -24,11 +24,11 @@ def cached_method(namespace=None, region=None, key=None, **cache_options):
                 cache = utility.get_cache(cache_ns, **cache_options)
             cache_key = None
             if key is not None:
-                cache_key = key(self)
+                cache_key = key(self, *args, **kwargs)
             if cache_key is None:
                 cache_key = tuple()
                 if IPersistent.providedBy(self):
-                    cache_key = tuple(str(self._p_oid))
+                    cache_key += tuple([str(self._p_oid)])
                 cache_key += tuple(map(str, args))
                 cache_key += tuple(map(
                         lambda kwarg: "=".join(map(str, kwarg)),

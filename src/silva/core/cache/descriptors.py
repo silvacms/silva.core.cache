@@ -11,7 +11,7 @@ from zope.component import getUtility
 from beaker import util
 
 
-def cached_method(namespace=None, region='shared', key=None, **cache_options):
+def cached_method(namespace=None, region='shared', key=None, expire=None, **cache_options):
     def decorator(func):
         cache_ns = namespace
         if cache_ns is None:
@@ -35,12 +35,13 @@ def cached_method(namespace=None, region='shared', key=None, **cache_options):
                         sorted(kwargs.items(), key=operator.itemgetter(0))))
             def solves():
                 return func(self, *args, **kwargs)
-            return cache.get_value(_verify_key(cache_key), createfunc=solves)
+            return cache.get_value(_verify_key(cache_key), createfunc=solves,
+                expiretime=expire)
         return cached_method
     return decorator
 
 
-def cached_property(namespace=None, region=None, **cache_options):
+def cached_property(namespace=None, region=None, expire=None, **cache_options):
     def decorator(func):
         cache_ns = namespace
         if cache_ns is None:
@@ -56,6 +57,7 @@ def cached_property(namespace=None, region=None, **cache_options):
                 cache_key = str(self._p_oid)
             def solves():
                 return func(self)
-            return cache.get_value(_verify_key(cache_key), createfunc=solves)
+            return cache.get_value(_verify_key(cache_key), createfunc=solves,
+                expiretime=expire)
         return property(cached_property)
     return decorator

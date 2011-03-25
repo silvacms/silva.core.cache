@@ -8,7 +8,8 @@ import os
 version = '2.3.3dev'
 
 tests_require = [
-    'infrae.testing'
+    'infrae.testing',
+    'python-memcached'
     ]
 
 setup(name='silva.core.cache',

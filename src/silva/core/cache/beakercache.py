@@ -62,11 +62,7 @@ class CacheManager(grok.GlobalUtility):
         regions = {}
         for key, value in cache_config.iteritems():
             if '.' in key:
-                try:
-                    region, param = key.split('.', 1)
-                except ValueError:
-                    continue
-
+                region, param = key.split('.', 1)
                 if region not in regions:
                     regions[region] = {}
                 regions[region][param] = value

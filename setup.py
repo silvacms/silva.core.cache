@@ -8,8 +8,7 @@ import os
 version = '2.3.3dev'
 
 tests_require = [
-    'infrae.testing',
-    'python-memcached'
+    'infrae.testing'
     ]
 
 setup(name='silva.core.cache',
@@ -41,7 +40,6 @@ setup(name='silva.core.cache',
         'infrae.cache',
         'setuptools',
         'silva.core.views',
-        'repoze.lru',
         'zope.component',
         'zope.datetime',
         'zope.interface',

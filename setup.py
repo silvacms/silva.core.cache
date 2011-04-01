@@ -9,7 +9,6 @@ version = '2.3.3dev'
 
 tests_require = [
     'infrae.testing',
-    'python-memcached'
     ]
 
 setup(name='silva.core.cache',
@@ -39,6 +38,7 @@ setup(name='silva.core.cache',
         'Beaker',
         'five.grok',
         'infrae.cache',
+        'python-memcached',
         'setuptools',
         'silva.core.views',
         'repoze.lru',

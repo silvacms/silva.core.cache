@@ -3,19 +3,65 @@ try:
 except ImportError:
     import memcache
 
-
 try:
     import threading
 except ImportError:
     import dummy_threading as threading
 
+import sys
+from collections import deque
 import time as clock
-from repoze.lru import LRUCache
 from App.config import getConfiguration
+
+
+class LRU(object):
+
+    def __init__(self, size):
+        self.lock = threading.Lock()
+        self.data = {}
+        self.usage = deque([], size)
+        self.cursor = 0
+        self.size = size
+
+    def get(self, key, default=None):
+        try:
+            value = self.data[key]
+            self._use(key)
+            return value
+        except KeyError:
+            return default
+
+    def put(self, key, value):
+        if key in self.data:
+            self._use(key)
+            self.data[key] = value
+            return
+
+        self.lock.acquire()
+        try:
+            if len(self.data) > self.size:
+                self._del()
+            self.data[key] = value
+            self.usage.append(key)
+        finally:
+            self.lock.release()
+
+    def _use(self, key):
+        self.lock.acquire()
+        try:
+            self.usage.remove(key)
+            self.usage.append(key)
+        finally:
+            self.lock.release()
+
+    def _del(self):
+        old = self.usage.popleft()
+        del self.data[old]
+
 
 _memcache_url = None
 _tlocal = threading.local()
-_cache = LRUCache(1000)
+_cache = LRU(1000)
 _lock = threading.Lock()
 
 def _get_memcache_url():
@@ -62,8 +108,6 @@ class MemcacheFakeClient(object):
                 self.set(key, value, time)
                 return True
             return False
-            # it seems that python-memcache does not return success but
-            # pylibmc does
         finally:
             self._mutex.release()
 
@@ -107,9 +151,12 @@ class MemcacheFakeClient(object):
 
 class Memcache(object):
 
-    def __init__(self, name):
+    def __init__(self, name, client=None):
         self.name = name
-        self._memcache = _get_memcache_client()
+        if client is not None:
+            self._memcache = client
+        else:
+            self._memcache = _get_memcache_client()
 
     def _get_namespaced_key(self, key):
         return self.name + ':' + str(key)
@@ -137,14 +184,17 @@ class Memcache(object):
 class MemcacheSlice(Memcache):
     _index_key = '__index__'
 
-    def __init__(self, name):
-        super(MemcacheSlice, self).__init__(name)
+    def __init__(self, name, client=None):
+        super(MemcacheSlice, self).__init__(name, client=client)
 
     def get_index(self):
         index = self._get_internal_index()
         if index is None:
             return -1
         return index - 1
+
+    def __len__(self):
+        return self.get_index() + 1
 
     def _get_internal_index(self):
         index = self.get(self._index_key)
@@ -162,10 +212,12 @@ class MemcacheSlice(Memcache):
         return self.set(str(index), data)
 
     def __getslice__(self, start, end):
-        if end is None:
+        if end is None or end == sys.maxint:
             end = self._get_internal_index()
         if start is None:
             start = 0
+        if start >= end:
+            return []
         keys = [str(index) for index in range(start + 1, end + 1)]
         mapped = self.get_multi(keys)
         return [mapped[key] for key in sorted(mapped.keys())]

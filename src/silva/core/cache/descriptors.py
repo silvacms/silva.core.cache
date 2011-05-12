@@ -11,7 +11,44 @@ from zope.component import getUtility
 from beaker import util
 
 
-def cached_method(namespace=None, region='shared', key=None, expire=None, **cache_options):
+class DontCache(Exception):
+    """to be raised by key generators when they determine the value of
+       a particular method or property invocation should NOT be cached.
+    """
+
+
+def concat_args(*args, **kwargs):
+    """serialize the positional and keyword arguments passed to the 
+       "method to be cached" into a tuple of strings.
+    """
+    
+    key = tuple(map(str, args))
+    key += tuple(map(
+        lambda kwarg: "=".join(map(str, kwarg)),
+        sorted(kwargs.items(), key=operator.itemgetter(0))))
+    return key
+
+
+def standard_method_key(self, *args, **kwargs):
+    """The standard key generation for methods of objects.  Keys generated
+       using this function are composed of the following:
+       1) If 'self' is IPersistent, adds self._p_oid (so instances are unique)
+       2) Serializes *args and **kwargs into a 1-tuple
+    """
+    
+    cache_key = tuple()
+    if IPersistent.providedBy(self):
+        cache_key += tuple([str(self._p_oid)])
+    cache_key += concat_args(*args, **kwargs)
+    return cache_key
+
+
+def cached_method(namespace=None, region='shared', key=standard_method_key,
+                  expire=None, **cache_options):
+    """create (return) a decorator on a method.  The vars in the above
+       call (cached_method) are available within the decorator (a closure)
+    """
+    
     def decorator(func):
         cache_ns = namespace
         if cache_ns is None:
@@ -22,17 +59,14 @@ def cached_method(namespace=None, region='shared', key=None, expire=None, **cach
                 cache = utility.get_cache_from_region(cache_ns, region)
             else:
                 cache = utility.get_cache(cache_ns, **cache_options)
-            cache_key = None
-            if key is not None:
+            try:
+                #generate the cache key (maybe using the standard method, or a
+                # custom key generator)
                 cache_key = key(self, *args, **kwargs)
-            if cache_key is None:
-                cache_key = tuple()
-                if IPersistent.providedBy(self):
-                    cache_key += tuple([str(self._p_oid)])
-                cache_key += tuple(map(str, args))
-                cache_key += tuple(map(
-                        lambda kwarg: "=".join(map(str, kwarg)),
-                        sorted(kwargs.items(), key=operator.itemgetter(0))))
+            except DontCache:
+                # if the key generator determines that the particular method
+                # invocation should NOT be cached, just call the function
+                return func(self, *args, **kwargs)
             def solves():
                 return func(self, *args, **kwargs)
             return cache.get_value(_verify_key(cache_key), createfunc=solves,
@@ -41,7 +75,22 @@ def cached_method(namespace=None, region='shared', key=None, expire=None, **cach
     return decorator
 
 
-def cached_property(namespace=None, region=None, expire=None, **cache_options):
+def property_key(self):
+    """standard key generator for properties.  Either 'property', or
+       the _p_oid of the persistent object
+    """
+    cache_key = 'property'
+    if IPersistent.providedBy(self):
+        cache_key = str(self._p_oid)
+    return cache_key
+
+
+def cached_property(namespace=None, region=None, key=property_key,
+                    expire=None, **cache_options):
+    """create (return) a decorator on a property (read-only).  The vars in the 
+       above call (cached_method) are available within the decorator (a closure)
+    """
+
     def decorator(func):
         cache_ns = namespace
         if cache_ns is None:
@@ -52,9 +101,12 @@ def cached_property(namespace=None, region=None, expire=None, **cache_options):
                 cache = utility.get_cache_from_region(cache_ns, region)
             else:
                 cache = utility.get_cache(cache_ns, **cache_options)
-            cache_key = 'property'
-            if IPersistent.providedBy(self):
-                cache_key = str(self._p_oid)
+            #if the key generator raises a DontCache exception, just return
+            # the property
+            try:
+                cache_key = key(self)
+            except DontCache:
+                return func(self)
             def solves():
                 return func(self)
             return cache.get_value(_verify_key(cache_key), createfunc=solves,

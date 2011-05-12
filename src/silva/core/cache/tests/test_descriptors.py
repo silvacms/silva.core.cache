@@ -9,14 +9,22 @@ import beaker.cache
 from zope.component import queryUtility
 
 from silva.core.cache.interfaces import ICacheManager, _verify_key
-from silva.core.cache.descriptors import cached_method, cached_property
+from silva.core.cache.descriptors import (cached_method, cached_property,
+                                          DontCache)
 from silva.core.cache.testing import FunctionalLayer
 
+def dontcache_key(self, *args, **kwargs):
+    #a contrived key generator which raises DontCache when otherval is 0
+    if self.otherval == 0:
+        raise DontCache
+    else:
+        return "otherval"
 
 class TestContent(object):
 
     def __init__(self):
         self.value = 0
+        self.otherval = 0
 
     @cached_method(type='memory')
     def add(self, number):
@@ -31,10 +39,44 @@ class TestContent(object):
     @cached_property(type='memory')
     def next(self):
         return self.value + 1
+    
+    @cached_method(key=dontcache_key)
+    def get_otherval(self):
+        return self.otherval
+    
+    @cached_property(key=dontcache_key)
+    def get_prop(self):
+        return self.otherval
 
 
 class DescriptorTestCase(unittest.TestCase):
     layer = FunctionalLayer
+
+    def test_dontcache_method(self):
+        #test to ensure that key generators raising dontcache actually are not
+        # cached
+        manager = queryUtility(ICacheManager)
+        content = TestContent()
+        #this method will not be cached if otherval is 0
+        self.assertEqual(content.otherval, content.get_otherval())
+        content.otherval = 1
+        self.assertEqual(content.otherval, content.get_otherval())
+        #now the method is cached, so changing otherval should have no effect
+        content.otherval = 2
+        self.assertEqual(1, content.get_otherval())
+        
+    def test_dontcache_property(self):
+        #test to ensure that key generators raising dontcache actually are not
+        # cached
+        manager = queryUtility(ICacheManager)
+        content = TestContent()
+        #this method will not be cached if otherval is 0
+        self.assertEqual(content.otherval, content.get_prop)
+        content.otherval = 1
+        self.assertEqual(content.otherval, content.get_prop)
+        #now the method is cached, so changing otherval should have no effect
+        content.otherval = 2
+        self.assertEqual(1, content.get_prop)
 
     def test_method_simple(self):
         manager = queryUtility(ICacheManager)

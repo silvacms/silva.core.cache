@@ -15,6 +15,9 @@ Changes
   If this support is desired, the key generator should raise the
   descriptors.DontCache exception.  (useful for key generators
 
+* Fixed ascii decoding bug with a simple str of _p_oid.  Instead base64
+  encode _p_oid first.
+
 2.3.2 (2010/10/27)
 ------------------
 

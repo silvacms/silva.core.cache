@@ -4,6 +4,7 @@
 # $Id$
 
 import operator
+import base64
 
 from persistent.interfaces import IPersistent
 from silva.core.cache.interfaces import ICacheManager, _verify_key
@@ -38,7 +39,10 @@ def standard_method_key(self, *args, **kwargs):
     
     cache_key = tuple()
     if IPersistent.providedBy(self):
-        cache_key += tuple([str(self._p_oid)])
+        #_p_oid needs to be base64 encoded, as not all chars in the string
+        # are in ascii range <128, so joining the key string will fail
+        oid = base64.standard_b64encode(self._p_oid)
+        cache_key += tuple([oid])
     cache_key += concat_args(*args, **kwargs)
     return cache_key
 

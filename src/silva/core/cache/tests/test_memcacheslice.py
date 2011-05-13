@@ -13,6 +13,7 @@ class TestMemoryImplementation(unittest.TestCase):
 
     def test_empty(self):
         self.assertEquals(-1, self.memslice.get_index())
+        self.assertEquals(0, len(self.memslice))
         self.assertEquals([], self.memslice[:])
         self.assertEquals([], self.memslice[0:1])
 

@@ -42,7 +42,10 @@ class LRU(object):
     def _use(self, key):
         self.lock.acquire()
         try:
-            self.usage.remove(key)
+            try:
+                self.usage.remove(key)
+            except ValueError:
+                pass
             self.usage.append(key)
         finally:
             self.lock.release()

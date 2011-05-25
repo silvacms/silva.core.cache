@@ -25,6 +25,7 @@ class TestContent(object):
     def __init__(self):
         self.value = 0
         self.otherval = 0
+        self.unicode_val = u''
 
     @cached_method(type='memory')
     def add(self, number):
@@ -36,6 +37,11 @@ class TestContent(object):
         self.value -= number
         return self.value
 
+    @cached_method()
+    def unicode(self, ustr):
+        self.unicode_val = ustr
+        return self.unicode_val
+    
     @cached_property(type='memory')
     def next(self):
         return self.value + 1
@@ -64,6 +70,12 @@ class DescriptorTestCase(unittest.TestCase):
         #now the method is cached, so changing otherval should have no effect
         content.otherval = 2
         self.assertEqual(1, content.get_otherval())
+        
+    def test_unicode(self):
+        # test non-ascii unicode arguments.  This is a simple test, we just want
+        # to make sure the key generator doesn't fail
+        content = TestContent()
+        content.unicode(u'\2016')
         
     def test_dontcache_property(self):
         #test to ensure that key generators raising dontcache actually are not

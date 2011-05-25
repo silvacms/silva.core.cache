@@ -5,6 +5,7 @@
 
 import operator
 import base64
+from types import UnicodeType
 
 from persistent.interfaces import IPersistent
 from silva.core.cache.interfaces import ICacheManager, _verify_key
@@ -22,10 +23,16 @@ def concat_args(*args, **kwargs):
     """serialize the positional and keyword arguments passed to the 
        "method to be cached" into a tuple of strings.
     """
-    
-    key = tuple(map(str, args))
+    def encode(arg):
+        #treat unicode strings specially (to preserve the encoded bytestring)
+        if isinstance(arg, UnicodeType):
+            return arg.encode('utf-8')
+        else:
+            return str(arg)
+        
+    key = tuple(map(encode, args))
     key += tuple(map(
-        lambda kwarg: "=".join(map(str, kwarg)),
+        lambda kwarg: "=".join(map(encode, kwarg)),
         sorted(kwargs.items(), key=operator.itemgetter(0))))
     return key
 
@@ -65,7 +72,9 @@ def cached_method(namespace=None, region='shared', key=standard_method_key,
                 cache = utility.get_cache(cache_ns, **cache_options)
             try:
                 #generate the cache key (maybe using the standard method, or a
-                # custom key generator)
+                # custom key generator).  Pass in the called function, in case
+                # the key generator wants to do any argument introspection
+                # or whatever.  `func` DOES NOT need to be added to the key
                 cache_key = key(self, func, *args, **kwargs)
             except DontCache:
                 # if the key generator determines that the particular method

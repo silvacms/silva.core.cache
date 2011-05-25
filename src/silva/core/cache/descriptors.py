@@ -30,7 +30,7 @@ def concat_args(*args, **kwargs):
     return key
 
 
-def standard_method_key(self, *args, **kwargs):
+def standard_method_key(self, func, *args, **kwargs):
     """The standard key generation for methods of objects.  Keys generated
        using this function are composed of the following:
        1) If 'self' is IPersistent, adds self._p_oid (so instances are unique)
@@ -66,7 +66,7 @@ def cached_method(namespace=None, region='shared', key=standard_method_key,
             try:
                 #generate the cache key (maybe using the standard method, or a
                 # custom key generator)
-                cache_key = key(self, *args, **kwargs)
+                cache_key = key(self, func, *args, **kwargs)
             except DontCache:
                 # if the key generator determines that the particular method
                 # invocation should NOT be cached, just call the function

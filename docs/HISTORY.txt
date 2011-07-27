@@ -1,10 +1,11 @@
 Changes
 =======
 
-2.3.3 (unreleased)
+2.3.3 (2010/07/27)
 ------------------
 
-* ...
+* Fix bugs in decorator ``cached_method`` (more options to cache key
+  function, fix expire).
 
 2.3.2 (2010/10/27)
 ------------------

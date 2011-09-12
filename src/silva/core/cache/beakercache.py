@@ -45,7 +45,7 @@ class CacheManager(grok.GlobalUtility):
     def get_cache_from_region(self, namespace, region):
         try:
             return self.bcm.get_cache_region(namespace, region)
-        except BeakerException as e:
+        except BeakerException, e:
             logger.warn('no specific configuration for region %s'
                         ' using defaults (%s) : %s',
                         region, repr(self.default_region_options), e)

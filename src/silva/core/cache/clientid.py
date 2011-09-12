@@ -4,14 +4,13 @@
 
 import random
 import sys
-import hashlib
 import time
+from sha import sha as sha1
 
 from five import grok
 
 from silva.core.views.interfaces import IVirtualSite
 from zope.publisher.interfaces.browser import IBrowserRequest
-from zope.publisher.browser import TestRequest
 from zope.session.interfaces import IClientId
 from zope.datetime import rfc1123_date
 
@@ -24,7 +23,7 @@ class ClientId(grok.Adapter):
     grok.provides(IClientId)
 
     def create_id(self):
-        return hashlib.sha1(str(random.randrange(sys.maxint))).hexdigest()
+        return sha1(str(random.randrange(sys.maxint))).hexdigest()
 
     def expire(self):
         return rfc1123_date(time.time() + 12 * 3600)
@@ -43,11 +42,3 @@ class ClientId(grok.Adapter):
         self.context.cookies[COOKIE_ID] = session_id
         return session_id
 
-
-# XXX This should be registered only for testing via a ftesting.zcml
-class TestClientId(grok.Adapter):
-    grok.context(TestRequest)
-    grok.provides(IClientId)
-
-    def __str__(self):
-        return 'client-id'

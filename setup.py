@@ -5,11 +5,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '2.3.4dev'
-
-tests_require = [
-    'infrae.testing'
-    ]
+version = '2.1dev'
 
 setup(name='silva.core.cache',
       version=version,
@@ -47,6 +43,4 @@ setup(name='silva.core.cache',
         'zope.session',
         'zope.testing',
         ],
-      tests_require = tests_require,
-      extras_require = {'test': tests_require},
       )

@@ -3,14 +3,14 @@
 # See also LICENSE.txt
 # $Id$
 
-import hashlib
+from md5 import md5
 
 from zope.interface import Interface
 
 
 def _verify_key(key):
     if isinstance(key, tuple):
-        return hashlib.md5(' '.join(key)).hexdigest()
+        return md5(' '.join(key)).hexdigest()
     return str(key)
 
 

@@ -12,12 +12,27 @@ import sys
 import time as clock
 from App.config import getConfiguration
 from silva.core.cache.lru import LRU
-
+from zope.testing.cleanup import addCleanUp
 
 _memcache_url = None
 _tlocal = threading.local()
 _cache = LRU(1000)
 _lock = threading.Lock()
+
+
+class Reset(object):
+
+    def __call__(self):
+        _cache.empty()
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.__call__()
+
+
+addCleanUp(Reset())
 
 def _get_memcache_url():
     global _memcache_url
@@ -175,6 +190,6 @@ class MemcacheSlice(Memcache):
             return []
         keys = [str(index) for index in range(start + 1, end + 1)]
         mapped = self.get_multi(keys)
-        return [mapped[key] for key in sorted(mapped.keys())]
+        return [mapped[key] for key in keys if key in mapped]
 
 

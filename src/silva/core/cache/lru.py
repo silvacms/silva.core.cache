@@ -11,10 +11,17 @@ class LRU(object):
 
     def __init__(self, size):
         self.lock = threading.Lock()
-        self.data = {}
-        self.usage = deque([], size)
-        self.cursor = 0
         self.size = size
+        self.empty()
+
+    def empty(self):
+        self.lock.acquire()
+        try:
+            self.data = {}
+            self.usage = deque([], self.size)
+            self.cursor = 0
+        finally:
+            self.lock.release()
 
     def get(self, key, default=None):
         try:

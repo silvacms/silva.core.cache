@@ -1,10 +1,13 @@
 Changes
 =======
 
-2.3.3 (unreleased)
-------------------
+3.0 (2011/11/08)
+----------------
 
-* ...
+* Add a memcache slice to store a list of items in memcache. There is
+  a fallback available if you don't have memcache.
+
+* Improve cache descriptors.
 
 2.3.2 (2010/10/27)
 ------------------

@@ -66,3 +66,6 @@ Developers have different tools at their disposal, mainly:
 ``silva.core.cache.interfaces.ICacheManager``
    A global utility provides this interface to give you access to all
    cache managers used by this extension.
+
+``silva.core.cache.memcacheutils.MemcacheSlice``
+   Store a list of items in memcache.

@@ -4,19 +4,7 @@ Changes
 2.3.3 (unreleased)
 ------------------
 
-* Refactored cache key generator for method and property decorator.
-  cached_property and cached_method now both take a 'key' argument (the
-  key generator).  The default key generator for each is now a top-level 
-  function in the descriptors module.  The code to serialize the method
-  args into a 1-tuple was factored out of the keygen code (so other key
-  generators can use it).
-   
-* Added support for preventing caching of a decorated method or property.
-  If this support is desired, the key generator should raise the
-  descriptors.DontCache exception.  (useful for key generators
-
-* Fixed ascii decoding bug with a simple str of _p_oid.  Instead base64
-  encode _p_oid first.
+* ...
 
 2.3.2 (2010/10/27)
 ------------------

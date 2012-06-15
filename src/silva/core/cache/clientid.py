@@ -30,7 +30,7 @@ class ClientId(grok.Adapter):
         return rfc1123_date(time.time() + 12 * 3600)
 
     def path(self):
-        return IVirtualSite(self.context).get_root().absolute_url_path()
+        return IVirtualSite(self.context).get_root_path()
 
     def __str__(self):
         if COOKIE_ID in self.context.cookies:

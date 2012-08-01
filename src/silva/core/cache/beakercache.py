@@ -11,7 +11,6 @@ from beaker.exceptions import BeakerException
 from five import grok
 from App.config import getConfiguration
 from silva.core.cache.interfaces import ICacheManager
-from zope.testing.cleanup import addCleanUp
 
 
 logger = logging.getLogger('silva.core.cache')
@@ -22,7 +21,13 @@ def reset_beaker_caches():
     beaker.cache.cache_managers.clear()
     beaker.container.MemoryNamespaceManager.namespaces.clear()
 
-addCleanUp(reset_beaker_caches)
+
+try:
+    from infrae.testing import testCleanup
+except ImportError:
+    pass
+else:
+    testCleanup.add(reset_beaker_caches)
 
 
 class CacheManager(grok.GlobalUtility):

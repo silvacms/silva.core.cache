@@ -12,7 +12,6 @@ import sys
 import time as clock
 from App.config import getConfiguration
 from silva.core.cache.lru import LRU
-from zope.testing.cleanup import addCleanUp
 
 _memcache_url = None
 _tlocal = threading.local()
@@ -32,7 +31,12 @@ class Reset(object):
         self.__call__()
 
 
-addCleanUp(Reset())
+try:
+    from infrae.testing import testCleanup
+except ImportError:
+    pass
+else:
+    testCleanup.add(Reset())
 
 def _get_memcache_url():
     global _memcache_url

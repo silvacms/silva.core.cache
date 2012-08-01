@@ -23,11 +23,11 @@ def reset_beaker_caches():
 
 
 try:
-    from infrae.testing import testCleanup
+    from infrae.testing import testCleanUp
 except ImportError:
     pass
 else:
-    testCleanup.add(reset_beaker_caches)
+    testCleanUp.add(reset_beaker_caches)
 
 
 class CacheManager(grok.GlobalUtility):

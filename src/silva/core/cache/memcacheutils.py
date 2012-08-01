@@ -32,11 +32,11 @@ class Reset(object):
 
 
 try:
-    from infrae.testing import testCleanup
+    from infrae.testing import testCleanUp
 except ImportError:
     pass
 else:
-    testCleanup.add(Reset())
+    testCleanUp.add(Reset())
 
 def _get_memcache_url():
     global _memcache_url

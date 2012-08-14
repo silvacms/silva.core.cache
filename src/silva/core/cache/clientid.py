@@ -37,7 +37,10 @@ class ClientId(grok.Adapter):
             return self.context.cookies[COOKIE_ID]
         session_id = self.create_id()
         self.context.response.setCookie(
-            COOKIE_ID, session_id, path=self.path(), expires=self.expire())
+            COOKIE_ID, session_id,
+            path=self.path(),
+            expires=self.expire(),
+            http_only=True)
         # We set the value in cookies as well in case we are reask to
         # provide an ID during this same request lifetime.
         self.context.cookies[COOKIE_ID] = session_id

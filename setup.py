@@ -1,11 +1,11 @@
-# Copyright (c) 2008 Infrae. All rights reserved.
+# -*- coding: utf-8 -*-
+# Copyright (c) 2008-2012 Infrae. All rights reserved.
 # See also LICENSE.txt
-# $Id: setup.py 44106 2010-07-29 11:12:54Z sylvain $
 
 from setuptools import setup, find_packages
 import os
 
-version = '3.0.1dev'
+version = '3.0.1'
 
 tests_require = [
     'infrae.testing',

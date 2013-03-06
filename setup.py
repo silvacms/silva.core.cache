@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2008-2012 Infrae. All rights reserved.
+# Copyright (c) 2008-2013 Infrae. All rights reserved.
 # See also LICENSE.txt
 
 from setuptools import setup, find_packages
 import os
 
-version = '3.0.2dev'
+version = '3.0.2'
 
 tests_require = [
     'infrae.testing',
@@ -28,7 +28,7 @@ setup(name='silva.core.cache',
       author='Infrae',
       author_email='info@infrae.com',
       url='https://hg.infrae.com/silva',
-      license='ZPL',
+      license='BSD',
       package_dir={'': 'src'},
       packages=find_packages('src'),
       namespace_packages=['silva', 'silva.core'],

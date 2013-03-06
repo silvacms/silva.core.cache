@@ -1,10 +1,11 @@
 Changes
 =======
 
-3.0.2 (unreleased)
+3.0.2 (2013/03/06)
 ------------------
 
-* ...
+* Session cookie now uses ``IVirtualSite`` new top level path method
+  instead of root path, ensuring the cookie is set for the whole site.
 
 3.0.1 (2012/09/24)
 ------------------

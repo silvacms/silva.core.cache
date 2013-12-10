@@ -74,5 +74,5 @@ Developers have different tools at their disposal, mainly:
 Code repository
 ===============
 
-The code for this extension can be found in Mercurial at:
-https://hg.infrae.com/silva.core.cache
+The code for this extension can be found in Git at:
+https://github.com/silvacms/silva.core.cache

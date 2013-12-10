@@ -13,7 +13,7 @@ tests_require = [
 
 setup(name='silva.core.cache',
       version=version,
-      description="caching utils for Silva",
+      description="Caching sub-system for Silva CMS",
       long_description=open("README.txt").read() + "\n" +
                        open(os.path.join("docs", "HISTORY.txt")).read(),
       classifiers=[
@@ -24,10 +24,10 @@ setup(name='silva.core.cache',
           "Topic :: Software Development :: Libraries :: Python Modules",
           "Framework :: Zope2",
           ],
-      keywords='zope2 cache silva',
+      keywords='zope2 cache silva beaker',
       author='Infrae',
       author_email='info@infrae.com',
-      url='https://hg.infrae.com/silva',
+      url='https://github.com/silvacms/silva.core.cache',
       license='BSD',
       package_dir={'': 'src'},
       packages=find_packages('src'),
